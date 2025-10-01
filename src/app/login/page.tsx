@@ -74,7 +74,7 @@ export default function LoginPage() {
     });
 
     // define submit handler
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: z.infer<typeof authSchema>) => {
 
         setLoading(true);
 
@@ -148,7 +148,7 @@ export default function LoginPage() {
                 <div className="w-3 h-3 bg-purple-600 rounded-sm"></div>
                 </div>
             </div>
-            <h1 className="text-2xl font-semibold text-white mb-1">John's Dashboard</h1>
+            <h1 className="text-2xl font-semibold text-white mb-1">John&apos;s Dashboard</h1>
             </div>
 
             <Card className="w-full shadow-lg border-gray-600 bg-white">
