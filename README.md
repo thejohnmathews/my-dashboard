@@ -8,16 +8,16 @@ How I created my-dashboard for Fastbreak AI:
  - Install necessary packages.
  - Create login/authentication page.
 
-## Commands Used:
+Commands Used:
  - nvm use 20
  - npx create-react-app@latest
  - git init
  - npx gitignore node
  - npm install @supabase/supabase-js @supabase/ssr react-hook-form zod @hookform/resolvers
  - npx shadcn@latest init
-    - npx shadcn@latest add form
+    - npx shadcn@latest add ___
 
-## Technologies Used:
+Technologies Used:
  - VSCode with WSL and Copilot -> IDE
  - GitHub -> version control
  - Supabase -> Backend with ProgreSQL
