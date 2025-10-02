@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import type { User } from "@supabase/supabase-js";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,7 +51,7 @@ type MoodEntry = {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -275,7 +276,7 @@ export default function DashboardPage() {
           <Card className="shadow-lg border-gray-200 bg-white">
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-gray-800">
-                Today's Check-in
+                Today&apos;s Check-in
               </CardTitle>
               <p className="text-sm text-gray-600">
                 How are you feeling and what did you accomplish today?
