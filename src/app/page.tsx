@@ -1,4 +1,5 @@
 // app/page.tsx
+// landing page, for this project, redirect to login/dashboard depending on auth state
 
 "use client"
 

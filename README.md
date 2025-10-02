@@ -7,6 +7,7 @@ How I created my-dashboard for Fastbreak AI:
  - Link RDS to local project and Vercel.
  - Install necessary packages.
  - Create login/authentication page.
+ - Create dashboard
 
 Commands Used:
  - nvm use 20
