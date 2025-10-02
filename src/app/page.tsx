@@ -66,15 +66,15 @@ export default function Home() {
         <div className="py-20 text-center">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Track Your
-              <span className="text-purple-600"> Mood </span>
-              & 
-              <span className="text-purple-600"> Productivity</span>
+              Your
+              <span className="text-purple-600"> Personal </span>
+              Life 
+              <span className="text-green-600"> Dashboard</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Build better habits and understand your patterns with Salud&apos;s simple, 
-              beautiful mood and productivity tracker. Visualize your journey with 
-              our intuitive calendar view.
+              Organize and track everything that matters to you with Salud. From mood and 
+              productivity to finances and beyond - one unified platform for all your 
+              personal data with powerful analytics and beautiful visualizations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -82,7 +82,7 @@ export default function Home() {
                 size="lg"
                 className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg"
               >
-                Start Tracking Today
+                Start Your Journey
               </Button>
             </div>
           </div>
@@ -92,10 +92,11 @@ export default function Home() {
         <div id="features" className="py-20">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Everything you need to understand yourself better
+              Everything you need to understand and improve your life
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Simple, powerful tools to track your daily mood and productivity patterns
+              Start with mood and finance tracking, then expand to any aspect of your personal life. 
+              Built to grow with your needs and adapt to what matters most to you.
             </p>
           </div>
 
@@ -104,12 +105,12 @@ export default function Home() {
             <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-shadow">
               <CardContent className="p-8 text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-3xl">😊</span>
+                  <span className="text-3xl">🧠</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Mood Tracking</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Mood & Well-being</h3>
                 <p className="text-gray-600">
-                  Track your daily emotions with our simple 5-point mood scale. 
-                  From excited to stressed, capture how you&apos;re really feeling.
+                  Track your daily emotions and productivity with interactive check-ins. 
+                  Build habits and understand patterns with beautiful heatmap visualizations.
                 </p>
               </CardContent>
             </Card>
@@ -118,12 +119,12 @@ export default function Home() {
             <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-shadow">
               <CardContent className="p-8 text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-3xl">📈</span>
+                  <span className="text-3xl">💵</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Productivity Insights</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Financial Management</h3>
                 <p className="text-gray-600">
-                  Rate your productivity on a 1-10 scale and track what you accomplished. 
-                  See your patterns over time.
+                  Track income and expenses with smart categorization. Visualize spending 
+                  patterns and monitor your financial health with detailed analytics.
                 </p>
               </CardContent>
             </Card>
@@ -132,12 +133,12 @@ export default function Home() {
             <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-shadow">
               <CardContent className="p-8 text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-3xl">📅</span>
+                  <span className="text-3xl">📊</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Calendar View</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Unified Analytics</h3>
                 <p className="text-gray-600">
-                  Visualize your mood journey with our beautiful calendar grid. 
-                  See patterns at a glance across weeks and months.
+                  See your complete life overview in one dashboard. Cross-analyze how your 
+                  mood affects spending and discover connections between different life areas.
                 </p>
               </CardContent>
             </Card>
@@ -146,12 +147,12 @@ export default function Home() {
             <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-shadow">
               <CardContent className="p-8 text-center">
                 <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-3xl">📝</span>
+                  <span className="text-3xl">📈</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Daily Reflections</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Visual Insights</h3>
                 <p className="text-gray-600">
-                  Add notes about your tasks and thoughts. Build a personal journal 
-                  of your productivity journey.
+                  Beautiful charts show expense breakdowns by category, mood trends over time, 
+                  and GitHub-style activity heatmaps for both health and wealth data.
                 </p>
               </CardContent>
             </Card>
@@ -159,13 +160,13 @@ export default function Home() {
             {/* Feature 5 */}
             <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-shadow">
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-3xl">📊</span>
+                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-3xl">⚙️</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Analytics</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Modular Design</h3>
                 <p className="text-gray-600">
-                  Get insights into your mood patterns and productivity trends. 
-                  Understand what works best for you.
+                  Start with mood and finance tracking, then expand to fitness, habits, goals, 
+                  or any personal metric. Built to grow with your changing needs.
                 </p>
               </CardContent>
             </Card>
@@ -178,8 +179,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Private & Secure</h3>
                 <p className="text-gray-600">
-                  Your data is private and secure. Only you can see your mood entries 
-                  and productivity insights.
+                  Your personal data is encrypted and private. Row-level security ensures 
+                  only you can access your mood, financial, and personal information.
                 </p>
               </CardContent>
             </Card>
