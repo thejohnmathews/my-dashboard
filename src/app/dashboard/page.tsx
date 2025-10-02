@@ -740,12 +740,12 @@ export default function DashboardPage() {
                 </div>
                 
                 {/* Heatmap Grid */}
-                <div className="flex justify-center">
+                <div>
                   {/* Heatmap Grid - 12 weeks × 7 days */}
-                  <div className="grid gap-1 max-w-full overflow-x-auto" style={{ 
-                    gridTemplateColumns: 'repeat(12, minmax(24px, 1fr))', 
+                  <div className="grid gap-1" style={{ 
+                    gridTemplateColumns: 'repeat(12, 1fr)', 
                     gridTemplateRows: 'repeat(7, 1fr)',
-                    width: 'min(100%, 320px)'
+                    width: '100%'
                   }}>
                     {(() => {
                       const today = new Date();
