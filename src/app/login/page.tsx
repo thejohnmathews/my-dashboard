@@ -6,6 +6,7 @@
 // React and Next.js imports
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 
 // zod and supabase imports
@@ -123,8 +124,8 @@ export default function LoginPage() {
                     form.setError("email", { message: "Sign in failed. Please try again." });
                 }
             }
-        } catch (error) {
-
+        } catch (err) {
+            console.error("Auth error:", err);
             form.setError("email", { message: "An unexpected error occurred" });
         }
 
@@ -141,14 +142,14 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-800 via-purple-900 to-gray-900 p-6">
         <div className="w-full max-w-md">
-            {/* filler logo */}
+            {/* Logo */}
             <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-600 rounded-lg mb-4 shadow-md">
-                <div className="w-6 h-6 bg-white rounded flex items-center justify-center">
-                <div className="w-3 h-3 bg-purple-600 rounded-sm"></div>
-                </div>
-            </div>
-            <h1 className="text-2xl font-semibold text-white mb-1">Salud</h1>
+                <Link href="/" className="inline-flex items-center hover:opacity-80 transition-opacity">
+                    <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
+                        <div className="w-4 h-4 bg-white rounded-sm"></div>
+                    </div>
+                    <h1 className="text-2xl font-semibold text-white mb-1">Salud</h1>
+                </Link>
             </div>
 
             <Card className="w-full shadow-lg border-gray-600 bg-white">

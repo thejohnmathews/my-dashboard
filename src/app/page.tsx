@@ -40,7 +40,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-purple-100 to-indigo-200">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-200 via-purple-200 to-indigo-200">
       {/* Header */}
       <header className="bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,7 +72,7 @@ export default function Home() {
               <span className="text-purple-600"> Productivity</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Build better habits and understand your patterns with Salud's simple, 
+              Build better habits and understand your patterns with Salud&apos;s simple, 
               beautiful mood and productivity tracker. Visualize your journey with 
               our intuitive calendar view.
             </p>
@@ -109,7 +109,7 @@ export default function Home() {
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Mood Tracking</h3>
                 <p className="text-gray-600">
                   Track your daily emotions with our simple 5-point mood scale. 
-                  From excited to stressed, capture how you're really feeling.
+                  From excited to stressed, capture how you&apos;re really feeling.
                 </p>
               </CardContent>
             </Card>

@@ -54,12 +54,12 @@ export default function DashboardPage() {
   const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [selectedMood, setSelectedMood] = useState("");
-  const [viewPeriod, setViewPeriod] = useState<'week' | 'month' | 'all'>('week');
+  const [hoveredEntry, setHoveredEntry] = useState<{entry: MoodEntry | null, x: number, y: number} | null>(null);
 
   const form = useForm<z.infer<typeof moodSchema>>({
     resolver: zodResolver(moodSchema),
     defaultValues: {
-      mood: "",
+      mood: "neutral",
       productivity: 5,
       task: "",
       notes: "",
@@ -211,60 +211,26 @@ export default function DashboardPage() {
   // Handle sign out
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/");
   };
 
-  // Generate calendar grid based on selected period
-  const generateCalendarGrid = () => {
-    const today = new Date();
-    const dates: Date[] = [];
-
-    if (viewPeriod === 'week') {
-      // Get current week (Sunday to Saturday)
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay());
-      
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(startOfWeek);
-        date.setDate(startOfWeek.getDate() + i);
-        dates.push(date);
-      }
-    } else if (viewPeriod === 'month') {
-      // Get current month
-      const year = today.getFullYear();
-      const month = today.getMonth();
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-      
-      // Start from first Sunday before or on the first day of month
-      const startDate = new Date(firstDay);
-      startDate.setDate(firstDay.getDate() - firstDay.getDay());
-      
-      // Generate dates for 6 weeks (42 days) to fill the grid
-      for (let i = 0; i < 42; i++) {
-        const date = new Date(startDate);
-        date.setDate(startDate.getDate() + i);
-        dates.push(date);
-      }
-    } else {
-      // All time - last 30 days
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        dates.push(date);
-      }
+  // Handle hovering over a mood entry in the heatmap
+  const handleEntryHover = (entry: MoodEntry | null, event: React.MouseEvent) => {
+    if (entry) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setHoveredEntry({
+        entry,
+        x: rect.left + rect.width / 2,
+        y: rect.top - 10
+      });
     }
-
-    return dates;
   };
 
-  // Get mood entry for a specific date
-  const getMoodForDate = (date: Date) => {
-    const dateStr = date.toDateString();
-    return moodEntries.find(entry => 
-      new Date(entry.created_at).toDateString() === dateStr
-    );
+  const handleEntryLeave = () => {
+    setHoveredEntry(null);
   };
+
+
 
   if (loading) {
     return (
@@ -297,7 +263,7 @@ export default function DashboardPage() {
           border: none;
         }
       `}</style>
-      <div className="min-h-screen bg-gradient-to-br from-gray-750 to-purple-750 to-gray-10">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-200 via-purple-200 to-indigo-200">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -367,7 +333,6 @@ export default function DashboardPage() {
                             >
                               <div className={`w-4 h-4 rounded-full ${mood.color}`}></div>
                               <span className="text-xs font-medium text-gray-700">{mood.label}</span>
-                              <span className="text-sm">{mood.emoji}</span>
                             </button>
                           ))}
                         </div>
@@ -391,16 +356,16 @@ export default function DashboardPage() {
                           <div className="space-y-3">
                             <input
                               type="range"
-                              min="1"
-                              max="10"
-                              value={field.value}
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              min="0"
+                              max="9"
+                              value={field.value - 1}
+                              onChange={(e) => field.onChange(parseInt(e.target.value) + 1)}
                               className="slider w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             />
                             <div className="flex justify-between text-xs text-gray-500">
-                              <span>Low</span>
-                              <span>Medium</span>
-                              <span>High</span>
+                              <span>1 - Low</span>
+                              <span>5 - Medium</span>
+                              <span>10 - High</span>
                             </div>
                           </div>
                         </FormControl>
@@ -760,19 +725,8 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 
-                {/* Heatmap with day labels */}
-                <div className="flex">
-                  {/* Day labels */}
-                  <div className="flex flex-col text-xs text-gray-500 mr-3 justify-between" style={{ height: '70px' }}>
-                    <span></span>
-                    <span>Mon</span>
-                    <span></span>
-                    <span>Wed</span>
-                    <span></span>
-                    <span>Fri</span>
-                    <span></span>
-                  </div>
-                  
+                {/* Heatmap Grid */}
+                <div>
                   {/* Heatmap Grid - 12 weeks × 7 days */}
                   <div className="grid gap-1" style={{ 
                     gridTemplateColumns: 'repeat(12, 1fr)', 
@@ -820,15 +774,13 @@ export default function DashboardPage() {
                           cells.push(
                             <div
                               key={`${week}-${day}`}
-                              className={`w-6 h-6 rounded-sm ${bgColor} transition-all duration-200 hover:scale-110 cursor-pointer`}
+                              className={`w-6 h-6 rounded-sm ${bgColor} transition-all duration-200 hover:scale-110 ${entry ? 'cursor-pointer' : 'cursor-default'}`}
                               style={{ 
                                 gridColumn: week + 1, 
                                 gridRow: day + 1 
                               }}
-                              title={entry 
-                                ? `${date.toLocaleDateString()}: ${entry.mood} mood, ${entry.productivity}/10 productivity` 
-                                : `${date.toLocaleDateString()}: No entry`
-                              }
+                              onMouseEnter={(e) => handleEntryHover(entry || null, e)}
+                              onMouseLeave={handleEntryLeave}
                             />
                           );
                         }
@@ -840,8 +792,7 @@ export default function DashboardPage() {
                 </div>
                 
                 {/* Legend */}
-                <div className="flex items-center justify-between text-xs text-gray-500 mt-4">
-                  <span>Less</span>
+                <div className="flex items-center justify-center text-xs text-gray-500 mt-4">
                   <div className="flex items-center space-x-1">
                     <div className="w-3 h-3 bg-gray-100 border border-gray-200 rounded-sm" title="No entry"></div>
                     <div className="w-3 h-3 bg-red-500 border border-red-600 rounded-sm" title="Stressed"></div>
@@ -850,7 +801,6 @@ export default function DashboardPage() {
                     <div className="w-3 h-3 bg-yellow-400 border border-yellow-500 rounded-sm" title="Happy"></div>
                     <div className="w-3 h-3 bg-green-500 border border-green-600 rounded-sm" title="Excited"></div>
                   </div>
-                  <span>More</span>
                 </div>
               </div>
             </CardContent>
@@ -914,6 +864,61 @@ export default function DashboardPage() {
           </Card>
         </div>
       </main>
+
+      {/* Hover Tooltip for Mood Entries */}
+      {hoveredEntry && hoveredEntry.entry && (
+        <div 
+          className="fixed z-50 pointer-events-none"
+          style={{
+            left: hoveredEntry.x,
+            top: hoveredEntry.y,
+            transform: 'translate(-50%, -100%)'
+          }}
+        >
+          <div className="bg-gray-900 text-white text-sm rounded-lg shadow-xl p-3 max-w-xs">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">
+                  {hoveredEntry.entry.mood === 'excited' ? '🤩' :
+                   hoveredEntry.entry.mood === 'happy' ? '😊' :
+                   hoveredEntry.entry.mood === 'neutral' ? '😐' :
+                   hoveredEntry.entry.mood === 'sad' ? '😢' :
+                   hoveredEntry.entry.mood === 'stressed' ? '😰' : '❓'}
+                </span>
+                <span className="font-medium capitalize">{hoveredEntry.entry.mood}</span>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <span className="text-purple-300">📊</span>
+                <span>Productivity: {hoveredEntry.entry.productivity}/10</span>
+              </div>
+              
+              {hoveredEntry.entry.task && (
+                <div className="flex items-start space-x-2">
+                  <span className="text-blue-300 mt-0.5">✅</span>
+                  <span className="text-xs leading-tight">{hoveredEntry.entry.task}</span>
+                </div>
+              )}
+              
+              {hoveredEntry.entry.notes && (
+                <div className="flex items-start space-x-2">
+                  <span className="text-yellow-300 mt-0.5">📝</span>
+                  <span className="text-xs leading-tight">{hoveredEntry.entry.notes.substring(0, 100)}{hoveredEntry.entry.notes.length > 100 ? '...' : ''}</span>
+                </div>
+              )}
+              
+              <div className="text-xs text-gray-400 pt-1 border-t border-gray-700">
+                {new Date(hoveredEntry.entry.created_at).toLocaleDateString()}
+              </div>
+            </div>
+            
+            {/* Tooltip Arrow */}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2">
+              <div className="border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
     </>
   );
