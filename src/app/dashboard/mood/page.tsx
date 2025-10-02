@@ -828,63 +828,6 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <Card className="shadow-lg border-gray-200 bg-white">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <span className="text-xl">📊</span>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Check-ins</p>
-                  <p className="text-2xl font-bold text-gray-900">{moodEntries.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-lg border-gray-200 bg-white">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <span className="text-xl">📈</span>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Avg Productivity</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {moodEntries.length > 0 
-                      ? (moodEntries.reduce((sum, entry) => sum + entry.productivity, 0) / moodEntries.length).toFixed(1)
-                      : '0'
-                    }/10
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-lg border-gray-200 bg-white">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <span className="text-xl">😊</span>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">This Week</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {moodEntries.filter(e => {
-                      const entryDate = new Date(e.created_at);
-                      const weekAgo = new Date();
-                      weekAgo.setDate(weekAgo.getDate() - 7);
-                      return entryDate >= weekAgo;
-                    }).length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </main>
 
       {/* Hover Tooltip for Mood Entries */}
