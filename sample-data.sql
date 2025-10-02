@@ -1,0 +1,73 @@
+-- SQL Script to insert 3 months of sample mood data
+
+INSERT INTO mood_entries (user_id, mood, productivity, task, notes, created_at) VALUES
+-- October 2025 (recent entries)
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 9, 'Completed React dashboard project', 'Feeling accomplished!', '2025-10-01 09:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 8, 'Fixed authentication bugs', 'Great progress today', '2025-09-30 14:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 6, 'Attended team meetings', 'Regular productive day', '2025-09-29 11:15:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 7, 'Studied TypeScript patterns', 'Learning new concepts', '2025-09-28 16:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 10, 'Deployed to production', 'Successful deployment!', '2025-09-27 10:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 5, 'Code reviews and documentation', '', '2025-09-26 13:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'stressed', 4, 'Debugging complex API issues', 'Challenging day', '2025-09-25 17:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 8, 'Built new dashboard features', 'Creative flow state', '2025-09-24 12:00:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 9, 'Learned Next.js 15 features', 'Exciting new tech!', '2025-09-23 15:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 6, 'Refactored component library', 'Steady progress', '2025-09-22 09:15:00'),
+
+-- September 2025
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 7, 'Implemented user authentication', 'Good problem solving', '2025-09-21 14:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'stressed', 3, 'Database migration issues', 'Frustrating technical problems', '2025-09-20 11:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 5, 'Planning sprint features', 'Regular planning session', '2025-09-19 10:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 8, 'Created mood tracking system', 'Proud of the design!', '2025-09-18 16:15:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 7, 'Optimized API performance', 'Great improvements', '2025-09-17 13:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'sad', 3, 'Dealing with production bugs', 'Feeling overwhelmed', '2025-09-16 18:00:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 6, 'Updated project documentation', 'Necessary but routine work', '2025-09-15 12:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 8, 'Collaborated on new features', 'Great teamwork today', '2025-09-14 15:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 9, 'Breakthrough on algorithm', 'Solved complex problem!', '2025-09-13 11:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 5, 'Routine maintenance tasks', 'Keeping systems running', '2025-09-12 14:15:00'),
+
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'stressed', 4, 'Tight deadline pressure', 'Feeling the pressure', '2025-09-11 17:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 7, 'Successful code review', 'Positive feedback received', '2025-09-10 10:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 10, 'Launched new feature', 'Users love the new feature!', '2025-09-09 16:00:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 6, 'Data analysis and reporting', 'Numbers look good', '2025-09-08 13:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 8, 'Mentored junior developer', 'Rewarding to help others', '2025-09-07 12:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'sad', 2, 'Lost work due to crash', 'Forgot to save changes', '2025-09-06 19:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 5, 'Attended technical conference', 'Learned about new trends', '2025-09-05 14:00:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 9, 'Started new side project', 'Excited about possibilities', '2025-09-04 20:15:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 7, 'Improved test coverage', 'Code quality improvements', '2025-09-03 11:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'stressed', 3, 'Multiple urgent requests', 'Too many things at once', '2025-09-02 18:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 6, 'Regular development work', 'Steady progress on features', '2025-09-01 15:30:00'),
+
+-- August 2025
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 8, 'Completed summer internship', 'Great learning experience', '2025-08-31 17:00:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 9, 'Received job offer', 'Dream job opportunity!', '2025-08-30 10:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 5, 'Preparing presentation', 'Final project showcase', '2025-08-29 14:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'stressed', 4, 'Project deadline crunch', 'Working late hours', '2025-08-28 22:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 7, 'Team building activity', 'Fun day with colleagues', '2025-08-27 16:15:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 8, 'Learning GraphQL', 'Fascinating new technology', '2025-08-26 13:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 6, 'Bug fixing session', 'Steady debugging work', '2025-08-25 11:00:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'sad', 3, 'Failed code review', 'Need to improve code quality', '2025-08-24 15:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 7, 'Implemented new algorithm', 'Efficient solution found', '2025-08-23 12:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 10, 'Won hackathon competition', 'Team victory!', '2025-08-22 20:00:00'),
+
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 5, 'Database optimization', 'Performance improvements', '2025-08-21 14:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'stressed', 3, 'Server outage response', 'Emergency troubleshooting', '2025-08-20 09:15:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 8, 'Successful product demo', 'Stakeholders impressed', '2025-08-19 16:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 9, 'New framework exploration', 'Love trying new tech!', '2025-08-18 13:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 6, 'Code refactoring day', 'Cleaning up technical debt', '2025-08-17 11:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'sad', 4, 'Difficult customer feedback', 'Harsh but necessary criticism', '2025-08-16 18:10:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 7, 'Pair programming session', 'Great collaboration', '2025-08-15 15:00:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 8, 'Open source contribution', 'Giving back to community', '2025-08-14 19:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 5, 'Requirements gathering', 'Understanding user needs', '2025-08-13 10:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'stressed', 4, 'Integration challenges', 'Complex system interactions', '2025-08-12 17:15:00'),
+
+-- July 2025 (more entries)
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 8, 'Vacation planning coding', 'Building travel app', '2025-07-31 14:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 9, 'Machine learning project', 'AI/ML is fascinating!', '2025-07-30 16:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 6, 'Security audit tasks', 'Important but tedious', '2025-07-29 12:15:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'stressed', 3, 'Production incident', 'High pressure situation', '2025-07-28 21:30:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 7, 'Feature launch success', 'Users are engaging well', '2025-07-27 13:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 10, 'Conference presentation', 'Shared knowledge with peers', '2025-07-26 11:00:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'neutral', 5, 'Documentation updates', 'Keeping docs current', '2025-07-25 15:20:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'sad', 2, 'Rejected pull request', 'Need to improve approach', '2025-07-24 18:45:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'happy', 8, 'Successful A/B test', 'Data-driven improvements', '2025-07-23 14:10:00'),
+('487e84be-ac3e-4b2a-b9d6-8ffb46ba0095', 'excited', 9, 'New team member onboard', 'Great addition to team', '2025-07-22 10:30:00');

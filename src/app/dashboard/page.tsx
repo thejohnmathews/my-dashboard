@@ -30,13 +30,11 @@ const moodSchema = z.object({
 
 // Mood options with colors
 const moodOptions = [
-  { value: "amazing", label: "Amazing", color: "bg-emerald-500", emoji: "🤩" },
-  { value: "great", label: "Great", color: "bg-green-500", emoji: "😊" },
-  { value: "good", label: "Good", color: "bg-lime-500", emoji: "🙂" },
-  { value: "okay", label: "Okay", color: "bg-yellow-500", emoji: "😐" },
-  { value: "meh", label: "Meh", color: "bg-orange-500", emoji: "😕" },
-  { value: "bad", label: "Bad", color: "bg-red-500", emoji: "😞" },
-  { value: "terrible", label: "Terrible", color: "bg-red-700", emoji: "😢" },
+  { value: "excited", label: "Excited", color: "bg-green-500"},
+  { value: "happy", label: "Happy", color: "bg-yellow-500"},
+  { value: "neutral", label: "Neutral", color: "bg-gray-500"},
+  { value: "sad", label: "Sad", color: "bg-blue-500"},
+  { value: "stressed", label: "Stressed", color: "bg-red-500"},
 ];
 
 type MoodEntry = {
@@ -87,6 +85,24 @@ export default function DashboardPage() {
     checkUser();
   }, [router]);
 
+  // Populate form with today's entry if it exists
+  useEffect(() => {
+    if (moodEntries.length > 0) {
+      const today = new Date().toDateString();
+      const todaysEntry = moodEntries.find(entry => 
+        new Date(entry.created_at).toDateString() === today
+      );
+      
+      if (todaysEntry) {
+        form.setValue('mood', todaysEntry.mood);
+        form.setValue('productivity', todaysEntry.productivity);
+        form.setValue('task', todaysEntry.task);
+        form.setValue('notes', todaysEntry.notes || '');
+        setSelectedMood(todaysEntry.mood);
+      }
+    }
+  }, [moodEntries, form]);
+
   // Load mood entries from Supabase
   const loadMoodEntries = async (userId: string) => {
     try {
@@ -106,42 +122,83 @@ export default function DashboardPage() {
     }
   };
 
-  // Handle form submission - save to Supabase
+  // Handle form submission - save to Supabase (one entry per day, allow updates)
   const onSubmit = async (data: z.infer<typeof moodSchema>) => {
     if (!user) return;
 
     setSubmitting(true);
     
     try {
-      const { data: newEntry, error } = await supabase
-        .from('mood_entries')
-        .insert([
-          {
-            user_id: user.id,
+      // Check if there's already an entry for today
+      const today = new Date().toDateString();
+      const existingEntry = moodEntries.find(entry => 
+        new Date(entry.created_at).toDateString() === today
+      );
+
+      if (existingEntry) {
+        // Update existing entry
+        const { data: updatedEntry, error } = await supabase
+          .from('mood_entries')
+          .update({
             mood: data.mood,
             productivity: data.productivity,
             task: data.task,
             notes: data.notes || null,
-          }
-        ])
-        .select()
-        .single();
+          })
+          .eq('id', existingEntry.id)
+          .select()
+          .single();
 
-      if (error) {
-        console.error('Error saving mood entry:', error);
-        form.setError('mood', { message: 'Failed to save entry. Please try again.' });
+        if (error) {
+          console.error('Error updating mood entry:', error);
+          form.setError('mood', { message: 'Failed to update entry. Please try again.' });
+        } else {
+          // Update the entry in the list
+          setMoodEntries(prev => 
+            prev.map(entry => entry.id === existingEntry.id ? updatedEntry : entry)
+          );
+          
+          // Reset form
+          form.reset({
+            mood: "",
+            productivity: 5,
+            task: "",
+            notes: "",
+          });
+          setSelectedMood("");
+        }
       } else {
-        // Add new entry to the top of the list
-        setMoodEntries(prev => [newEntry, ...prev]);
-        
-        // Reset form
-        form.reset({
-          mood: "",
-          productivity: 5,
-          task: "",
-          notes: "",
-        });
-        setSelectedMood("");
+        // Create new entry
+        const { data: newEntry, error } = await supabase
+          .from('mood_entries')
+          .insert([
+            {
+              user_id: user.id,
+              mood: data.mood,
+              productivity: data.productivity,
+              task: data.task,
+              notes: data.notes || null,
+            }
+          ])
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error saving mood entry:', error);
+          form.setError('mood', { message: 'Failed to save entry. Please try again.' });
+        } else {
+          // Add new entry to the top of the list
+          setMoodEntries(prev => [newEntry, ...prev]);
+          
+          // Reset form
+          form.reset({
+            mood: "",
+            productivity: 5,
+            task: "",
+            notes: "",
+          });
+          setSelectedMood("");
+        }
       }
     } catch (error) {
       console.error('Error saving mood entry:', error);
@@ -240,9 +297,9 @@ export default function DashboardPage() {
           border: none;
         }
       `}</style>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50 to-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-gray-750 to-purple-750 to-gray-10">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -270,57 +327,57 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Mood & Productivity Input Form */}
-          <Card className="shadow-lg border-gray-200 bg-white">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-800">
-                Today&apos;s Check-in
-              </CardTitle>
-              <p className="text-sm text-gray-600">
-                How are you feeling and what did you accomplish today?
-              </p>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  
-                  {/* Mood Selection */}
-                  <FormField
-                    control={form.control}
-                    name="mood"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700 text-base font-medium">How are you feeling?</FormLabel>
-                        <FormControl>
-                          <div className="grid grid-cols-4 gap-2 mt-2">
-                            {moodOptions.map((mood) => (
-                              <button
-                                key={mood.value}
-                                type="button"
-                                onClick={() => {
-                                  field.onChange(mood.value);
-                                  setSelectedMood(mood.value);
-                                }}
-                                className={`p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center space-y-1 ${
-                                  field.value === mood.value
-                                    ? 'border-purple-500 bg-purple-50'
-                                    : 'border-gray-200 hover:border-gray-300'
-                                }`}
-                              >
-                                <div className={`w-4 h-4 rounded-full ${mood.color}`}></div>
-                                <span className="text-xs font-medium text-gray-700">{mood.label}</span>
-                                <span className="text-sm">{mood.emoji}</span>
-                              </button>
-                            ))}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+        
+        {/* Today's Check-in - Moved to Top */}
+        <Card className="shadow-lg border-gray-200 bg-white mb-8">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-gray-800">
+              Today&apos;s Check-in
+            </CardTitle>
+            <p className="text-sm text-gray-600">
+              How are you feeling and what did you accomplish today?
+            </p>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                
+                {/* Mood Selection */}
+                <FormField
+                  control={form.control}
+                  name="mood"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 text-base font-medium">How are you feeling?</FormLabel>
+                      <FormControl>
+                        <div className="grid grid-cols-5 gap-3 mt-2">
+                          {moodOptions.map((mood) => (
+                            <button
+                              key={mood.value}
+                              type="button"
+                              onClick={() => {
+                                field.onChange(mood.value);
+                                setSelectedMood(mood.value);
+                              }}
+                              className={`p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center space-y-1 ${
+                                field.value === mood.value
+                                  ? 'border-purple-500 bg-purple-50'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              <div className={`w-4 h-4 rounded-full ${mood.color}`}></div>
+                              <span className="text-xs font-medium text-gray-700">{mood.label}</span>
+                              <span className="text-sm">{mood.emoji}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Productivity Scale */}
                   <FormField
                     control={form.control}
@@ -338,12 +395,12 @@ export default function DashboardPage() {
                               max="10"
                               value={field.value}
                               onChange={(e) => field.onChange(parseInt(e.target.value))}
-                              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                              className="slider w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             />
                             <div className="flex justify-between text-xs text-gray-500">
-                              <span>1 - Low</span>
-                              <span>5 - Average</span>
-                              <span>10 - Amazing</span>
+                              <span>Low</span>
+                              <span>Medium</span>
+                              <span>High</span>
                             </div>
                           </div>
                         </FormControl>
@@ -352,200 +409,449 @@ export default function DashboardPage() {
                     )}
                   />
 
-                  {/* Task Description */}
+                  {/* Task Input */}
                   <FormField
                     control={form.control}
                     name="task"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700">What did you work on today?</FormLabel>
+                        <FormLabel className="text-gray-700 text-base font-medium">What did you work on?</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Describe your main tasks or activities"
-                            className="border-gray-300 focus:border-purple-500 focus:ring-purple-500/20"
+                          <Input 
+                            placeholder="e.g., Completed project proposal..."
                             {...field}
+                            className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                </div>
 
-                  {/* Optional Notes */}
-                  <FormField
-                    control={form.control}
-                    name="notes"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Notes (optional)</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Any additional thoughts or reflections"
-                            className="border-gray-300 focus:border-purple-500 focus:ring-purple-500/20"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                {/* Notes Input */}
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 text-base font-medium">Additional notes (optional)</FormLabel>
+                      <FormControl>
+                        <textarea
+                          placeholder="Any additional thoughts or reflections..."
+                          {...field}
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <Button
-                    type="submit"
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3"
-                    disabled={submitting}
-                  >
-                    {submitting ? "Saving..." : "Save Today's Entry"}
-                  </Button>
-                </form>
-              </Form>
+                <Button 
+                  type="submit" 
+                  disabled={submitting}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md transition-colors duration-200"
+                >
+                  {submitting ? 'Saving...' : (() => {
+                    const today = new Date().toDateString();
+                    const existingEntry = moodEntries.find(entry => 
+                      new Date(entry.created_at).toDateString() === today
+                    );
+                    return existingEntry ? 'Update Today\'s Entry' : 'Save Today\'s Entry';
+                  })()}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+        
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Total Entries Card */}
+          <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Entries</p>
+                  <p className="text-3xl font-bold text-gray-900">{moodEntries.length}</p>
+                </div>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">📊</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Mood & Productivity Visualization */}
-          <Card className="shadow-lg border-gray-200 bg-gray-50">
+          {/* Most Common Mood Card */}
+          <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Most Common Mood</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {moodEntries.length > 0 
+                      ? (() => {
+                          // Count occurrences of each mood
+                          const moodCounts = moodEntries.reduce((acc, entry) => {
+                            acc[entry.mood] = (acc[entry.mood] || 0) + 1;
+                            return acc;
+                          }, {} as Record<string, number>);
+                          
+                          // Find the most common mood
+                          const mostCommonMood = Object.entries(moodCounts).reduce((max, [mood, count]) => 
+                            count > max.count ? { mood, count } : max
+                          , { mood: '', count: 0 });
+                          
+                          // Capitalize the mood name
+                          return mostCommonMood.mood.charAt(0).toUpperCase() + mostCommonMood.mood.slice(1);
+                        })()
+                      : 'No Data'
+                    }
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">
+                    {moodEntries.length > 0 
+                      ? (() => {
+                          // Get the emoji for the most common mood
+                          const moodCounts = moodEntries.reduce((acc, entry) => {
+                            acc[entry.mood] = (acc[entry.mood] || 0) + 1;
+                            return acc;
+                          }, {} as Record<string, number>);
+                          
+                          const mostCommonMood = Object.entries(moodCounts).reduce((max, [mood, count]) => 
+                            count > max.count ? { mood, count } : max
+                          , { mood: '', count: 0 });
+                          
+                          const moodEmojis = {
+                            excited: '🤩',
+                            happy: '😊',
+                            neutral: '😐',
+                            sad: '😢',
+                            stressed: '😰'
+                          };
+                          
+                          return moodEmojis[mostCommonMood.mood as keyof typeof moodEmojis] || '😊';
+                        })()
+                      : '😊'
+                    }
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Average Productivity Card */}
+          <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Avg Productivity</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {moodEntries.length > 0 
+                      ? (moodEntries.reduce((sum, entry) => sum + entry.productivity, 0) / moodEntries.length).toFixed(1)
+                      : '0.0'
+                    }
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">📈</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Current Streak Card */}
+          <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Current Streak</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {(() => {
+                      // Calculate streak of consecutive days with entries
+                      const today = new Date();
+                      let streak = 0;
+                      for (let i = 0; i < 30; i++) {
+                        const checkDate = new Date(today);
+                        checkDate.setDate(today.getDate() - i);
+                        const hasEntry = moodEntries.some(entry => 
+                          new Date(entry.created_at).toDateString() === checkDate.toDateString()
+                        );
+                        if (hasEntry) {
+                          streak++;
+                        } else {
+                          break;
+                        }
+                      }
+                      return streak;
+                    })()}
+                  </p>
+                  <p className="text-xs text-gray-500">days</p>
+                </div>
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🔥</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Analytics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <Card className="shadow-lg border-gray-200 bg-white">
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-gray-800">
-                Your Mood Journey ({moodEntries.length} entries)
+                Mood Distribution
               </CardTitle>
               <p className="text-sm text-gray-600">
-                Visual calendar of your mood patterns
+                Breakdown of your emotional patterns
               </p>
-              
-              {/* Period Filter Buttons */}
-              <div className="flex space-x-2 mt-4">
-                {(['week', 'month', 'all'] as const).map((period) => (
-                  <button
-                    key={period}
-                    onClick={() => setViewPeriod(period)}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      viewPeriod === period
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
-                    }`}
-                  >
-                    {period === 'week' ? 'This Week' : 
-                     period === 'month' ? 'This Month' : 
-                     'Last 30 Days'}
-                  </button>
-                ))}
-              </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                
-                {/* Mood Calendar Grid */}
-                <div>
-                  {viewPeriod === 'week' && (
-                    <div className="mb-4">
-                      <div className="grid grid-cols-7 gap-2 mb-2">
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                          <div key={day} className="text-center text-xs font-medium text-gray-500 py-1">
-                            {day}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+              <div className="space-y-4">
+                {(() => {
+                  const moodCounts = moodEntries.reduce((acc, entry) => {
+                    acc[entry.mood] = (acc[entry.mood] || 0) + 1;
+                    return acc;
+                  }, {} as Record<string, number>);
                   
-                  {viewPeriod === 'month' && (
-                    <div className="mb-4">
-                      <div className="text-center font-medium text-gray-800 mb-3">
-                        {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                      </div>
-                      <div className="grid grid-cols-7 gap-2 mb-2">
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                          <div key={day} className="text-center text-xs font-medium text-gray-500 py-1">
-                            {day}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  const moodLabels = {
+                    excited: { label: 'Excited', color: 'bg-green-500', emoji: '🤩' },
+                    happy: { label: 'Happy', color: 'bg-yellow-500', emoji: '😊' },
+                    neutral: { label: 'Neutral', color: 'bg-gray-500', emoji: '😐' },
+                    sad: { label: 'Sad', color: 'bg-blue-500', emoji: '😢' },
+                    stressed: { label: 'Stressed', color: 'bg-red-500', emoji: '😰' }
+                  };
 
-                  <div className={`grid gap-2 ${
-                    viewPeriod === 'week' ? 'grid-cols-7' :
-                    viewPeriod === 'month' ? 'grid-cols-7' :
-                    'grid-cols-10'
-                  }`}>
-                    {generateCalendarGrid().map((date, index) => {
-                      const moodEntry = getMoodForDate(date);
-                      const mood = moodEntry ? moodOptions.find(m => m.value === moodEntry.mood) : null;
-                      const isToday = date.toDateString() === new Date().toDateString();
-                      const isCurrentMonth = viewPeriod !== 'month' || date.getMonth() === new Date().getMonth();
-                      
-                      return (
-                        <div
-                          key={index}
-                          className={`aspect-square flex flex-col items-center justify-center rounded-lg border-2 transition-all ${
-                            moodEntry
-                              ? `${mood?.color} border-gray-300 text-white font-medium`
-                              : isCurrentMonth
-                                ? 'bg-white border-gray-200 hover:border-gray-300'
-                                : 'bg-gray-100 border-gray-100 opacity-50'
-                          } ${
-                            isToday ? 'ring-2 ring-purple-500 ring-offset-2' : ''
-                          }`}
-                          title={
-                            moodEntry
-                              ? `${mood?.label} - Productivity: ${moodEntry.productivity}/10\n${moodEntry.task}`
-                              : `${date.toLocaleDateString()} - No entry`
-                          }
-                        >
-                          <span className={`text-xs ${
-                            moodEntry ? 'text-white' : isCurrentMonth ? 'text-gray-700' : 'text-gray-400'
-                          }`}>
-                            {viewPeriod === 'all' ? `${date.getMonth() + 1}/${date.getDate()}` : date.getDate()}
-                          </span>
-                          {moodEntry && (
-                            <span className="text-xs mt-1">{mood?.emoji}</span>
-                          )}
+                  return Object.entries(moodLabels).map(([mood, config]) => {
+                    const count = moodCounts[mood] || 0;
+                    const percentage = moodEntries.length > 0 ? (count / moodEntries.length) * 100 : 0;
+                    
+                    return (
+                      <div key={mood} className="flex items-center space-x-3">
+                        <span className="text-xl">{config.emoji}</span>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-sm font-medium text-gray-700">{config.label}</span>
+                            <span className="text-sm text-gray-600">{count} ({percentage.toFixed(1)}%)</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className={`${config.color} h-2 rounded-full transition-all duration-500`}
+                              style={{ width: `${percentage}%` }}
+                            ></div>
+                          </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Legend */}
-                <div className="bg-white rounded-lg p-4">
-                  <h5 className="font-medium text-gray-800 mb-3">Mood Legend</h5>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {moodOptions.map((mood) => (
-                      <div key={mood.value} className="flex items-center space-x-2">
-                        <div className={`w-4 h-4 rounded-full ${mood.color}`}></div>
-                        <span className="text-xs text-gray-600">{mood.label}</span>
                       </div>
-                    ))}
-                  </div>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <div className="w-4 h-4 rounded-full bg-white border-2 border-gray-200"></div>
-                    <span className="text-xs text-gray-600">No entry</span>
+                    );
+                  });
+                })()}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg border-gray-200 bg-white">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-gray-800">
+                Weekly Productivity Trend
+              </CardTitle>
+              <p className="text-sm text-gray-600">
+                Your productivity over the last 7 days
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {(() => {
+                  const last7Days = [];
+                  const today = new Date();
+                  
+                  for (let i = 6; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() - i);
+                    
+                    const dayEntries = moodEntries.filter(entry => 
+                      new Date(entry.created_at).toDateString() === date.toDateString()
+                    );
+                    
+                    const avgProductivity = dayEntries.length > 0 
+                      ? dayEntries.reduce((sum, entry) => sum + entry.productivity, 0) / dayEntries.length
+                      : 0;
+                    
+                    last7Days.push({
+                      date,
+                      productivity: avgProductivity,
+                      dayName: date.toLocaleDateString('en-US', { weekday: 'short' })
+                    });
+                  }
+                  
+                  return last7Days.map((day, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                      <span className="text-sm font-medium text-gray-600 w-8">{day.dayName}</span>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <div className="w-full bg-gray-200 rounded-full h-6 relative">
+                            <div 
+                              className="bg-gradient-to-r from-purple-500 to-blue-500 h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
+                              style={{ width: `${(day.productivity / 10) * 100}%` }}
+                            >
+                              {day.productivity > 0 && (
+                                <span className="text-xs text-white font-medium">
+                                  {day.productivity.toFixed(1)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 gap-8">
+          {/* GitHub-style Mood Heatmap - Extended to full width */}
+          <Card className="shadow-lg border-gray-200 bg-white">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-800">
+                Mood Activity ({moodEntries.length} entries)
+              </CardTitle>
+              <p className="text-sm text-gray-600">
+                Your mood patterns over the past 12 weeks
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Month labels - properly distributed */}
+                <div className="flex justify-start text-xs text-gray-500">
+                  <div className="w-12"></div> {/* Space for day labels */}
+                  <div className="flex-1 grid grid-cols-12 gap-1">
+                    {(() => {
+                      const months = [];
+                      const today = new Date();
+                      for (let i = 11; i >= 0; i--) {
+                        const date = new Date(today);
+                        date.setDate(today.getDate() - (i * 7)); // Go back by weeks
+                        const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+                        months.push(monthName);
+                      }
+                      
+                      // Group months to avoid repetition
+                      const uniqueMonths = [];
+                      let lastMonth = '';
+                      for (let i = 0; i < 12; i++) {
+                        if (months[i] !== lastMonth) {
+                          uniqueMonths.push({ month: months[i], col: i });
+                          lastMonth = months[i];
+                        }
+                      }
+                      
+                      return uniqueMonths.map((item, index) => (
+                        <div key={index} style={{ gridColumn: `${item.col + 1} / span 1` }}>
+                          {item.month}
+                        </div>
+                      ));
+                    })()}
                   </div>
                 </div>
-
-                {/* Recent Entries List */}
-                {moodEntries.length > 0 && (
-                  <div className="bg-white rounded-lg p-4">
-                    <h5 className="font-medium text-gray-800 mb-3">Recent Check-ins</h5>
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {moodEntries.slice(0, 5).map((entry) => {
-                        const mood = moodOptions.find(m => m.value === entry.mood);
-                        return (
-                          <div key={entry.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <div className="flex items-center space-x-2">
-                              <div className={`w-3 h-3 rounded-full ${mood?.color || 'bg-gray-300'}`}></div>
-                              <span className="text-sm text-gray-700">{mood?.label}</span>
-                              <span className="text-xs text-purple-600">({entry.productivity}/10)</span>
-                            </div>
-                            <span className="text-xs text-gray-500">
-                              {new Date(entry.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
+                
+                {/* Heatmap with day labels */}
+                <div className="flex">
+                  {/* Day labels */}
+                  <div className="flex flex-col text-xs text-gray-500 mr-3 justify-between" style={{ height: '70px' }}>
+                    <span></span>
+                    <span>Mon</span>
+                    <span></span>
+                    <span>Wed</span>
+                    <span></span>
+                    <span>Fri</span>
+                    <span></span>
                   </div>
-                )}
+                  
+                  {/* Heatmap Grid - 12 weeks × 7 days */}
+                  <div className="grid gap-1" style={{ 
+                    gridTemplateColumns: 'repeat(12, 1fr)', 
+                    gridTemplateRows: 'repeat(7, 1fr)',
+                    width: '100%'
+                  }}>
+                    {(() => {
+                      const today = new Date();
+                      const startDate = new Date(today);
+                      startDate.setDate(today.getDate() - 83); // 12 weeks back
+                      
+                      // Create a 2D array for weeks and days
+                      const weeks = [];
+                      for (let week = 0; week < 12; week++) {
+                        const weekDays = [];
+                        for (let day = 0; day < 7; day++) {
+                          const date = new Date(startDate);
+                          date.setDate(startDate.getDate() + (week * 7) + day);
+                          weekDays.push(date);
+                        }
+                        weeks.push(weekDays);
+                      }
+                      
+                      // Render by columns (weeks) then rows (days)
+                      const cells = [];
+                      for (let week = 0; week < 12; week++) {
+                        for (let day = 0; day < 7; day++) {
+                          const date = weeks[week][day];
+                          const entry = moodEntries.find(entry => 
+                            new Date(entry.created_at).toDateString() === date.toDateString()
+                          );
+                          
+                          let bgColor = 'bg-gray-100 border border-gray-200'; // No entry
+                          if (entry) {
+                            switch (entry.mood) {
+                              case 'excited': bgColor = 'bg-green-500 border border-green-600'; break;
+                              case 'happy': bgColor = 'bg-yellow-400 border border-yellow-500'; break;
+                              case 'neutral': bgColor = 'bg-gray-400 border border-gray-500'; break;
+                              case 'sad': bgColor = 'bg-blue-500 border border-blue-600'; break;
+                              case 'stressed': bgColor = 'bg-red-500 border border-red-600'; break;
+                              default: bgColor = 'bg-gray-200 border border-gray-300';
+                            }
+                          }
+                          
+                          cells.push(
+                            <div
+                              key={`${week}-${day}`}
+                              className={`w-6 h-6 rounded-sm ${bgColor} transition-all duration-200 hover:scale-110 cursor-pointer`}
+                              style={{ 
+                                gridColumn: week + 1, 
+                                gridRow: day + 1 
+                              }}
+                              title={entry 
+                                ? `${date.toLocaleDateString()}: ${entry.mood} mood, ${entry.productivity}/10 productivity` 
+                                : `${date.toLocaleDateString()}: No entry`
+                              }
+                            />
+                          );
+                        }
+                      }
+                      
+                      return cells;
+                    })()}
+                  </div>
+                </div>
+                
+                {/* Legend */}
+                <div className="flex items-center justify-between text-xs text-gray-500 mt-4">
+                  <span>Less</span>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-3 h-3 bg-gray-100 border border-gray-200 rounded-sm" title="No entry"></div>
+                    <div className="w-3 h-3 bg-red-500 border border-red-600 rounded-sm" title="Stressed"></div>
+                    <div className="w-3 h-3 bg-blue-500 border border-blue-600 rounded-sm" title="Sad"></div>
+                    <div className="w-3 h-3 bg-gray-400 border border-gray-500 rounded-sm" title="Neutral"></div>
+                    <div className="w-3 h-3 bg-yellow-400 border border-yellow-500 rounded-sm" title="Happy"></div>
+                    <div className="w-3 h-3 bg-green-500 border border-green-600 rounded-sm" title="Excited"></div>
+                  </div>
+                  <span>More</span>
+                </div>
               </div>
             </CardContent>
           </Card>
