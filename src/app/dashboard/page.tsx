@@ -103,6 +103,20 @@ export default function DashboardPage() {
     }
   }, [moodEntries, form]);
 
+  // Close tooltip on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (hoveredEntry) {
+        setHoveredEntry(null);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, [hoveredEntry]);
+
   // Load mood entries from Supabase
   const loadMoodEntries = async (userId: string) => {
     try {
@@ -726,12 +740,12 @@ export default function DashboardPage() {
                 </div>
                 
                 {/* Heatmap Grid */}
-                <div>
+                <div className="flex justify-center">
                   {/* Heatmap Grid - 12 weeks × 7 days */}
-                  <div className="grid gap-1" style={{ 
-                    gridTemplateColumns: 'repeat(12, 1fr)', 
+                  <div className="grid gap-1 max-w-full overflow-x-auto" style={{ 
+                    gridTemplateColumns: 'repeat(12, minmax(24px, 1fr))', 
                     gridTemplateRows: 'repeat(7, 1fr)',
-                    width: '100%'
+                    width: 'min(100%, 320px)'
                   }}>
                     {(() => {
                       const today = new Date();
