@@ -142,30 +142,34 @@ export default function DashboardPage() {
       <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
-                <div className="w-4 h-4 bg-white rounded-sm"></div>
+            <div className="flex items-center min-w-0 flex-1 sm:flex-none">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-sm"></div>
               </div>
-              <h1 className="text-xl font-semibold text-gray-800">Salud - Dashboard</h1>
+              <h1 className="text-sm sm:text-xl font-semibold text-gray-800 truncate">
+                <span className="hidden sm:inline">Salud - Dashboard</span>
+                <span className="sm:hidden">Salud</span>
+              </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+              <span className="text-xs sm:text-sm text-gray-600 hidden md:block truncate max-w-32 lg:max-w-none">
                 Welcome, {user?.user_metadata?.full_name || user?.email}
               </span>
               <Button
                 onClick={handleSignOut}
                 variant="outline"
                 size="sm"
-                className="border-gray-300 hover:bg-gray-50"
+                className="border-gray-300 hover:bg-gray-50 text-xs sm:text-sm px-2 sm:px-3"
               >
-                Sign Out
+                <span className="hidden sm:inline">Sign Out</span>
+                <span className="sm:hidden">Exit</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8">
         
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -252,21 +256,23 @@ export default function DashboardPage() {
           
           <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-all cursor-pointer group">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">🧠</span>
+              <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl sm:text-2xl">🧠</span>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-800">Mood & Productivity</h3>
-                    <p className="text-sm text-gray-600">Daily check-ins and mental health tracking</p>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">Mood & Productivity</h3>
+                    <p className="text-xs sm:text-sm text-gray-600">Daily check-ins and mental health tracking</p>
                   </div>
                 </div>
                 <Button
                   onClick={() => router.push('/dashboard/mood')}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto flex-shrink-0"
+                  size="sm"
                 >
-                  Open →
+                  <span className="sm:hidden">Open Mood Tracker</span>
+                  <span className="hidden sm:inline">Open →</span>
                 </Button>
               </CardTitle>
             </CardHeader>
@@ -314,21 +320,23 @@ export default function DashboardPage() {
 
           <Card className="shadow-lg border-gray-200 bg-white hover:shadow-xl transition-all cursor-pointer group">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">💰</span>
+              <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl sm:text-2xl">💰</span>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-800">Financial Tracker</h3>
-                    <p className="text-sm text-gray-600">Income, expenses, and financial analytics</p>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">Financial Tracker</h3>
+                    <p className="text-xs sm:text-sm text-gray-600">Income, expenses, and financial analytics</p>
                   </div>
                 </div>
                 <Button
                   onClick={() => router.push('/dashboard/financial')}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-green-600 hover:bg-green-700 w-full sm:w-auto flex-shrink-0"
+                  size="sm"
                 >
-                  Open →
+                  <span className="sm:hidden">Open Financial Tracker</span>
+                  <span className="hidden sm:inline">Open →</span>
                 </Button>
               </CardTitle>
             </CardHeader>

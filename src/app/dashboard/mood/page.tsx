@@ -282,31 +282,36 @@ export default function DashboardPage() {
       <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+            <div className="flex items-center min-w-0 flex-1 sm:flex-none">
               <Button
                 onClick={() => router.push('/dashboard')}
                 variant="ghost"
                 size="sm"
-                className="mr-4 hover:bg-gray-100"
+                className="mr-2 sm:mr-4 hover:bg-gray-100 flex-shrink-0"
               >
-                ← Back to Dashboard
+                <span className="hidden sm:inline">← Back to Dashboard</span>
+                <span className="sm:hidden">← Back</span>
               </Button>
-              <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
-                <div className="w-4 h-4 bg-white rounded-sm"></div>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-sm"></div>
               </div>
-              <h1 className="text-xl font-semibold text-gray-800">Mood & Productivity Tracker</h1>
+              <h1 className="text-sm sm:text-xl font-semibold text-gray-800 truncate">
+                <span className="hidden sm:inline">Mood & Productivity Tracker</span>
+                <span className="sm:hidden">Mood Tracker</span>
+              </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+              <span className="text-xs sm:text-sm text-gray-600 hidden md:block truncate max-w-32 lg:max-w-none">
                 Welcome, {user?.user_metadata?.full_name || user?.email}
               </span>
               <Button
                 onClick={handleSignOut}
                 variant="outline"
                 size="sm"
-                className="border-gray-300 hover:bg-gray-50"
+                className="border-gray-300 hover:bg-gray-50 text-xs sm:text-sm px-2 sm:px-3"
               >
-                Sign Out
+                <span className="hidden sm:inline">Sign Out</span>
+                <span className="sm:hidden">Exit</span>
               </Button>
             </div>
           </div>
@@ -314,7 +319,7 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8">
         
         {/* Today's Check-in - Moved to Top */}
         <Card className="shadow-lg border-gray-200 bg-white mb-8">
